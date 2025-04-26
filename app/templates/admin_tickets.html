@@ -1,0 +1,67 @@
+{% extends "base_admin.html" %}
+{% block title %}🎟️ Gestion des tickets{% endblock %}
+
+{% block content %}
+<div class="admin-tickets-container">
+  <h1 class="page-title">🎟️ Liste des tickets</h1>
+
+  <!-- 🔍 Filtres -->
+  <form method="GET" class="ticket-filter-form">
+    <label>Statut :</label>
+    <select name="status" onchange="this.form.submit()">
+      <option value="">-- Tous --</option>
+      <option value="open" {{ 'selected' if selected_status == 'open' else '' }}>Ouverts</option>
+      <option value="pending" {{ 'selected' if selected_status == 'pending' else '' }}>En attente</option>
+      <option value="closed" {{ 'selected' if selected_status == 'closed' else '' }}>Fermés</option>
+    </select>
+
+    <label>Entreprise :</label>
+    <select name="enterprise_id" onchange="this.form.submit()">
+      <option value="">-- Toutes les entreprises --</option>
+      {% for e in enterprises %}
+        <option value="{{ e.id }}" {% if selected_enterprise_id == e.id %}selected{% endif %}>
+          {{ e.name }}
+        </option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <!-- 📋 Tableau des tickets -->
+  <table class="tickets-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Sujet</th>
+        <th>Entreprise</th>
+        <th>Créé par</th>
+        <th>Statut</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ticket in tickets %}
+      <tr>
+        <td>{{ ticket.id }}</td>
+        <td>{{ ticket.subject or '—' }}</td>
+        <td>{{ ticket.creator.enterprise.name if ticket.creator and ticket.creator.enterprise else '—' }}</td>
+        <td>{{ ticket.creator.name if ticket.creator else '—' }}</td>
+        <td>
+          {% if ticket.status == 'open' %}
+            🟢 Ouvert
+          {% elif ticket.status == 'pending' %}
+            🟡 En attente
+          {% else %}
+            🔴 Fermé
+          {% endif %}
+        </td>
+        <td>{{ ticket.created_at.strftime('%d/%m/%Y') }}</td>
+        <td>
+          <a href="{{ url_for('admin_chat.view_chat', ticket_id=ticket.id) }}" class="btn-view-ticket">💬 Voir</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

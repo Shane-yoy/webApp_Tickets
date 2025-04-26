@@ -1,0 +1,138 @@
+{% extends "base_admin.html" %}
+{% block title %}Gestion des utilisateurs{% endblock %}
+
+{% block content %}
+<div class="admin-users-container">
+  <h1 class="page-title">👤 Gestion des utilisateurs</h1>
+
+  <table class="users-table">
+    <thead>
+      <tr>
+        <th>Photo</th>
+        <th>Nom</th>
+        <th>Email</th>
+        <th>Rôle</th>
+        <th>Entreprise</th>
+        <th>Actif</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+      <tr>
+        <form method="POST" action="{{ url_for('admin_users.update_user', user_id=user.id) }}">
+          <td>
+            <img src="{{ user.avatar_url or url_for('static', filename='images/default_avatar.jpg') }}" class="avatar" alt="avatar">
+          </td>
+          <td><input type="text" name="name" value="{{ user.name }}" required></td>
+          <td><input type="email" name="email" value="{{ user.email }}" required></td>
+          <td>
+            <select name="role">
+              <option value="user" {% if user.role == 'user' %}selected{% endif %}>Utilisateur</option>
+              <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+            </select>
+          </td>
+          <td>
+            <select name="enterprise_id">
+              {% for enterprise in enterprises %}
+              <option value="{{ enterprise.id }}" {% if user.enterprise_id == enterprise.id %}selected{% endif %}>{{ enterprise.name }}</option>
+              {% endfor %}
+            </select>
+          </td>
+          <td>{{ "✅" if user.is_active else "❌" }}</td>
+          <td class="actions">
+            <button type="submit" class="btn btn-edit">💾</button>
+          </form> <!-- 🟡 fermeture du form ici pour que seule l'édition passe en POST -->
+            <form method="POST" action="{{ url_for('admin_users.delete_user', user_id=user.id) }}" class="inline-form" onsubmit="return confirm('Supprimer cet utilisateur ?');">
+              <button type="submit" class="btn btn-delete">🗑️</button>
+            </form>
+          </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    
+  </table>
+
+  <h2 class="form-title">➕ Ajouter un utilisateur</h2>
+  <form method="POST" action="{{ url_for('admin_users.list_users') }}" class="user-form" id="userForm">
+    <input type="hidden" name="action" value="create">
+  
+    <div class="form-group">
+      <input type="text" name="name" placeholder="Nom" required>
+      <span class="error-msg" id="error-name"></span>
+    </div>
+  
+    <div class="form-group">
+      <input type="email" name="email" placeholder="Email" required>
+      <span class="error-msg" id="error-email"></span>
+    </div>
+
+    <div class="form-group">
+      <select name="role">
+        <option value="">Sélectionner un rôle</option>
+        <option value="user">Utilisateur</option>
+        <option value="admin">Admin</option>
+      </select>
+      <span class="error-msg" id="error-role"></span>
+    </div>
+
+    <div class="form-group">
+      <select name="enterprise_id" required>
+        <option value="">Sélectionner une entreprise</option>
+        {% for enterprise in enterprises %}
+        <option value="{{ enterprise.id }}">{{ enterprise.name }}</option>
+        {% endfor %}
+      </select>
+      <span class="error-msg" id="error-entreprise"></span>
+    </div>
+  
+    <div class="form-group">
+      <input type="password" name="password" placeholder="Mot de passe" required>
+      <span class="error-msg" id="error-password"></span>
+    </div>
+  
+    <button type="submit" class="btn btn-create">Créer</button>
+  </form>
+  
+</div>
+
+<script>
+  document.getElementById('userForm').addEventListener('submit', function(event) {
+    let isValid = true;
+  
+    const name = this.name.value.trim();
+    const email = this.email.value.trim();
+    const role = this.role.value;
+    const password = this.password.value.trim();
+  
+    // Réinitialiser les messages d'erreur
+    document.querySelectorAll('.error-msg').forEach(el => el.textContent = '');
+  
+    if (!name) {
+      document.getElementById('error-name').textContent = "Le nom est requis.";
+      isValid = false;
+    }
+    if (!email) {
+      document.getElementById('error-email').textContent = "L'email est requis.";
+      isValid = false;
+    }
+    if (!role) {
+      document.getElementById('error-role').textContent = "Le rôle est requis.";
+      isValid = false;
+    }
+    if (!entreprise) {
+      document.getElementById('error-entreprise').textContent = "L'entreprise est requis.";
+      isValid = false;
+    }
+    if (!password || password.length < 6) {
+      document.getElementById('error-password').textContent = "Mot de passe requis (min 6 caractères).";
+      isValid = false;
+    }
+  
+    if (!isValid) {
+      event.preventDefault(); // Empêche l'envoi si erreur
+    }
+  });
+  </script>
+  
+{% endblock %}

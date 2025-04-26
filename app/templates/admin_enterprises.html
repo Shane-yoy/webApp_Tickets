@@ -1,0 +1,27 @@
+{% extends "base_admin.html" %}
+{% block title %}Entreprises{% endblock %}
+
+{% block content %}
+<h1 class="page-title">🏢 Liste des entreprises</h1>
+<table class="users-table">
+  <thead>
+    <tr><th>Nom</th><th>Nombre d'utilisateurs</th></tr>
+  </thead>
+  <tbody>
+    {% for enterprise in enterprises %}
+    <tr>
+      <td>{{ enterprise.name }}</td>
+      <td>{{ enterprise.users|length }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- ➕ Formulaire d'ajout d'une entreprise -->
+<h2 class="form-title">➕ Ajouter une entreprise</h2>
+<form method="POST" action="{{ url_for('admin_enterprises.list_enterprises') }}" class="user-form">
+  <input type="text" name="name" placeholder="Nom de l'entreprise" required>
+  <button type="submit" class="btn btn-create">Ajouter</button>
+</form>
+
+{% endblock %}

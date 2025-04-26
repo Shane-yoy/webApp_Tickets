@@ -1,0 +1,20 @@
+{% extends "base_user.html" %}
+{% block title %}Tableau de bord utilisateur{% endblock %}
+
+{% block content %}
+<div class="main-panel">
+  <h1 class="page-title">👋 Bienvenue, {{ user.name }}</h1>
+
+  <div class="cards-row">
+    <div class="card green">
+      <p>Tickets ouverts</p>
+      <h2>5</h2> <!-- À remplacer par une vraie requête utilisateur -->
+    </div>
+    <div class="card red">
+      <p>Messages</p>
+      <h2>12</h2>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

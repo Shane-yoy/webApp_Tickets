@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}User Dashboard{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="user-body">
+
+  <!-- Sidebar User -->
+  {% include 'components/sidebar_user.html' %}
+
+  <!-- Contenu principal -->
+  <main class="main-panel">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block scripts %}{% endblock %}  
+
+</body>
+</html>

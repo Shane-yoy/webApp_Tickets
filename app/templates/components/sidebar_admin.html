@@ -1,0 +1,18 @@
+<aside class="sidebar">
+  <div class="logo">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo-img">
+    <h2>Admin Panel</h2>
+  </div>
+  <nav class="menu">
+    <ul>
+      <li><a href="{{ url_for('admin_dashboard.admin_dashboard') }}">📊 Dashboard</a></li>
+      <li><a href="{{ url_for('admin_users.list_users') }}">👤 Utilisateurs</a></li>
+      <li><a href="{{ url_for('admin_enterprises.list_enterprises') }}">🏢 Entreprises</a></li>
+      <li><a href="{{ url_for('admin_tickets.list_tickets') }}">🎟️ Tickets</a></li>
+      <li><a href="#">💬 Messages</a></li>
+      <li><a href="#">📈 Prédictions</a></li>
+      <li><a href="#">🛠️ Monitoring</a></li>
+      <li><a href="{{ url_for('auth.logout') }}">🚪 Déconnexion</a></li>
+    </ul>
+  </nav>
+</aside>

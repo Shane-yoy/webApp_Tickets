@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: mysql:8.0
+    container_name: flask_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: user
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    networks:
+      - monitoring
+
+
+  prometheus:
+    image: prom/prometheus:v2.33.0
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - db
+    networks:
+      - monitoring
+
+
+  grafana:
+    image: grafana/grafana:8.4.3
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+
+
+  mysql_exporter:
+    image: prom/mysqld-exporter:latest
+    container_name: mysql_exporter
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+    ports:
+      - "9104:9104"
+    depends_on:
+      - db
+    networks:
+      - monitoring
+
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: mlflow
+    environment:
+      - BACKEND_STORE_URI=mysql+pymysql://root:root@db/mydatabase
+      - ARTIFACT_STORE_URI=s3://mlflow-artifacts/  
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlruns:/mlflow/mlruns
+    depends_on:
+      - db
+    networks:
+      - monitoring
+
+
+  web:
+    build: .
+    container_name: flask_app
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - FLASK_DEBUG=1
+      - FLASK_APP=run.py
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge
+
+volumes:
+  mysql_data:
