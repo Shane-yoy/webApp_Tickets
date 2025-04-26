@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+  <!-- Mermaid Diagram -->
+  <!-- templates/diagram.html -->
+  <div class="mermaid">
+    erDiagram
+    ENTREPRISE {
+    int entreprise_id PK
+    string name
+    }
+    TICKET {
+    int ticket_id PK
+    int entreprise_id FK
+    string description
+    }
+    CONVERSATION {
+    int conversation_id PK
+    int ticket_id FK
+    datetime created_at
+    }
+    CONVERSATION_PARTICIPANTS {
+    int user_id PK, FK
+    int conversation_id PK, FK
+    }
+    MESSAGE {
+    int message_id PK
+    int user_id FK
+    int conversation_id FK
+    text content
+    datetime timestamp
+    }
+    SENTIMENT_ANALYSIS {
+    int analysis_id PK
+    int message_id FK
+    float sentiment_score
+    datetime analysis_timestamp
+    }
+    USER {
+    int user_id PK
+    string username
+    string email
+    }
+
+    ENTREPRISE ||--o{ TICKET : "possède"
+    TICKET ||--o{ CONVERSATION : "contient"
+    CONVERSATION ||--o{ MESSAGE : "a"
+    MESSAGE ||--o{ SENTIMENT_ANALYSIS : "analysé par"
+    USER ||--o{ MESSAGE : "écrit"
+    USER ||--o{ CONVERSATION_PARTICIPANTS : "participe à"
+    CONVERSATION ||--o{ CONVERSATION_PARTICIPANTS : "contient"
+  </div>
+
+  <!-- Mermaid Diagram script -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+
+
+
+  <div class="colonne2">
+
+
+    <!-- Mermaid Diagram -->
+
+
+
+    <h1>USER</h1>
+
+    <!-- CREATE USER FORM -->
+    <div>
+      <h2>Créer un Utilisateur</h2>
+      <form method="POST" action="{{ url_for('main.bdd') }}">
+        <label for="create-username">Nom d'utilisateur :</label>
+        <input type="text" id="create-username" name="username" required>
+        <label for="create-email">Email :</label>
+        <input type="email" id="create-email" name="email">
+        <button type="submit">Créer</button>
+      </form>
+    </div>
+
+    <!-- USER LIST TABLE -->
+    <div>
+
+      {% if users %}
+      <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nom d'utilisateur</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <form method="POST" action="{{ url_for('main.update_user', user_id=user.user_id) }}">
+              <td>{{ user.user_id }}</td>
+              <td><input type="text" name="username" value="{{ user.username }}" required></td>
+              <td><input type="email" name="email" value="{{ user.email }}"></td>
+              <td>
+                <button type="submit">Modifier</button>
+            </form>
+            <form method="POST" action="{{ url_for('main.delete_user', user_id=user.user_id) }}"
+              style="display:inline;">
+              <button type="submit" onclick="return confirm('Supprimer cet utilisateur ?')">Supprimer</button>
+            </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>Aucun utilisateur trouvé.</p>
+      {% endif %}
+    </div>
+
+    <hr>
+
+    <h1>ENTREPRISE</h1>
+
+    <!-- CREATE ENTREPRISE FORM -->
+    <div>
+      <h2>Créer une Entreprise</h2>
+      <form method="POST" action="{{ url_for('main.create_entreprise') }}">
+        <label for="entreprise-name">Nom de l'entreprise :</label>
+        <input type="text" id="entreprise-name" name="name" required>
+        <button type="submit">Créer</button>
+      </form>
+    </div>
+
+    <!-- ENTREPRISE LIST TABLE -->
+    <div>
+      {% if entreprises %}
+      <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nom de l'entreprise</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entreprise in entreprises %}
+          <tr>
+            <form method="POST"
+              action="{{ url_for('main.update_entreprise', entreprise_id=entreprise.entreprise_id) }}">
+              <td>{{ entreprise.entreprise_id }}</td>
+              <td><input type="text" name="name" value="{{ entreprise.name }}" required></td>
+              <td>
+                <button type="submit">Modifier</button>
+            </form>
+            <form method="POST" action="{{ url_for('main.delete_entreprise', entreprise_id=entreprise.entreprise_id) }}"
+              style="display:inline;">
+              <button type="submit" onclick="return confirm('Supprimer cette entreprise ?')">Supprimer</button>
+            </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>Aucune entreprise trouvée.</p>
+      {% endif %}
+    </div>
+
+    <hr>
+
+
+    <!-- CREATE TICKET FORM -->
+    <div>
+      <h1>TICKET</h1>
+
+      <h2>Créer un Ticket</h2>
+      <form method="POST" action="{{ url_for('main.create_ticket') }}">
+        <label for="ticket-description">Description :</label>
+        <input type="text" id="ticket-description" name="description" required>
+
+        <label for="ticket-entreprise">Entreprise :</label>
+        <select name="entreprise_id" id="ticket-entreprise" required>
+          {% for entreprise in entreprises %}
+          <option value="{{ entreprise.entreprise_id }}">{{ entreprise.name }}</option>
+          {% endfor %}
+        </select>
+
+        <button type="submit">Créer</button>
+      </form>
+    </div>
+
+    <!-- TICKET LIST TABLE -->
+    <div>
+      {% if tickets %}
+      <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Entreprise</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ticket in tickets %}
+          <tr>
+            <form method="POST" action="{{ url_for('main.update_ticket', ticket_id=ticket.ticket_id) }}">
+              <td>{{ ticket.ticket_id }}</td>
+              <td>{{ ticket.entreprise.name }}</td>
+              <td><input type="text" name="description" value="{{ ticket.description }}" required></td>
+              <td>
+                <button type="submit">Modifier</button>
+            </form>
+            <form method="POST" action="{{ url_for('main.delete_ticket', ticket_id=ticket.ticket_id) }}"
+              style="display:inline;">
+              <button type="submit" onclick="return confirm('Supprimer ce ticket ?')">Supprimer</button>
+            </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>Aucun ticket trouvé.</p>
+      {% endif %}
+    </div>
+
+    <hr>
+
+    <h1>Gestion des Conversations</h1>
+
+    <!-- CREATE CONVERSATION FORM -->
+
+    <h2>Créer une Conversation</h2>
+    <form method="POST" action="{{ url_for('main.create_conversation') }}">
+      <label for="conv-ticket">Ticket :</label>
+      <select name="ticket_id" id="conv-ticket" required>
+        {% for ticket in tickets %}
+        <option value="{{ ticket.ticket_id }}">{{ ticket.description }} (Entreprise: {{ ticket.entreprise.name }})
+        </option>
+        {% endfor %}
+      </select>
+      <button type="submit">Créer</button>
+    </form>
+
+
+
+
+    <!-- CREATE CONVERSATION FORM 
+    <div>
+      <h2>Créer une Conversation</h2>
+      <form method="POST" action="{{ url_for('main.create_conversation') }}">
+
+      
+        <label for="conv-ticket">Ticket :</label>
+        <select name="ticket_id" id="conv-ticket" required>
+          {% for ticket in tickets %}
+          <option value="{{ ticket.ticket_id }}">
+            {{ ticket.description }} (Entreprise: {{ ticket.entreprise.name }})
+          </option>
+          {% endfor %}
+        </select>
+        <br><br>
+        <label for="user1">Utilisateur 1 :</label>
+        <select name="user1_id" id="user1" required>
+          {% for user in users %}
+          <option value="{{ user.user_id }}">{{ user.username }}</option>
+          {% endfor %}
+        </select>
+        <br><br>
+        
+        <label for="user2">Utilisateur 2 :</label>
+        <select name="user2_id" id="user2" required>
+          {% for user in users %}
+          <option value="{{ user.user_id }}">{{ user.username }}</option>
+          {% endfor %}
+        </select>
+        <br><br>
+
+        <button type="submit">Créer</button>
+      </form>
+    </div>
+    <div>
+      <h2>CONVERSATION</h2>
+      {% if conversations %}
+      <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Ticket</th>
+            <th>Date de création</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for conv in conversations %}
+          <tr>
+            <td>{{ conv.conversation_id }}</td>
+            <td>{{ conv.ticket.description }}</td>
+            <td>{{ conv.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+           
+            <td>
+              <form method="POST"
+                action="{{ url_for('main.delete_conversation', conversation_id=conv.conversation_id) }}"
+                style="display:inline;">
+                <button type="submit" onclick="return confirm('Supprimer cette conversation ?')">Supprimer</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>Aucune conversation trouvée.</p>
+      {% endif %}
+    </div>
+    -->
+  </div>
+
+
+
+  {% endblock %}

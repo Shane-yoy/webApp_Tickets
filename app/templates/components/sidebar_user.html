@@ -1,0 +1,14 @@
+<aside class="sidebar">
+  <div class="logo">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="logo-img">
+    <h2>Mon Compte</h2>
+  </div>
+  <nav class="menu">
+    <ul>
+      <li><a href="{{ url_for('user_dashboard.user_dashboard') }}">🏠 Dashboard</a></li>
+      <li><a href="{{ url_for('user_tickets.user_tickets') }}">🎟️ Mes Tickets</a></li>
+      <li><a href="#">🧍 Mon Profil</a></li>
+      <li><a href="{{ url_for('auth.logout') }}">🚪 Déconnexion</a></li>
+    </ul>
+  </nav>
+</aside>

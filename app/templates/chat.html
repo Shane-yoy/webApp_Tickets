@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Chat Room</h1>
+<h3>/ᐠ •̀ ˕ •́ マ ____________ ฅ(•- •マ</h3>
+<div class="container">
+  <div class="chat-box">
+    <div class="messages">
+      {% for msg in messages %}
+      <div class="message {{ 'left' if msg.user == 'User 1' else 'right' }}">
+        <p><strong>{{ msg.user }}:</strong> {{ msg.message }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="forms-container">
+
+      <form method="POST" class="chat-form user1">
+        <input type="hidden" name="user" value="User 1">
+        <div>
+          <input type="text" name="message" id="message1" required>
+          <h3>User 1</h3>
+        </div>
+      </form>
+
+      <form method="POST" class="chat-form user2">
+        <input type="hidden" name="user" value="User 2">
+        <div>
+          <input type="text" name="message" id="message2" required>
+          <h3>User 2</h3>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

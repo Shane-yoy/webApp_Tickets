@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="responsive-text">
+
+  <h1>About</h1>
+  <section>
+    <h2>Lancer l'environnement virtuel</h2>
+    <ul>
+      <li>Rendez-vous dans le répertoire du projet : <code>Bureau/Analyse_de_Sentiment/ticketSentiments</code></li>
+      <li>Activez l'environnement virtuel : <code>source ticketSentiments/bin/activate</code></li>
+    </ul>
+
+    <h2>Lancer l'application</h2>
+
+    </li>
+
+    <li>Accédez à l'application via navigateur : <a href="http://127.0.0.1:5000">http://127.0.0.1:5000</a></li>
+
+    <li>Accédez au monitoring de l'application : <a
+        href="http://127.0.0.1:5000/dashboard">http://127.0.0.1:5000/dashboard</a>
+    </li>
+
+    </ul>
+
+    <h3>Méthode 2 : Lancer avec Python3</h3>
+    <ul>
+      <li>Dans le dossier contenant <code>run.py</code>, lancez l'application : <code>python3 run.py</code></li>
+    </ul>
+
+    <h2>Utiliser Docker pour lancer l'application</h2>
+    <h3><code>cd webApp_Tickets</code></h3>
+    <ul>
+      <li><code>sudo docker-compose up -d</code></li>
+      <li><code>sudo docker-compose stop</code></li>
+    </ul>
+    <ul>
+      <li><a href="http://127.0.0.1:5000">http://127.0.0.1:5000</a></li>
+    </ul>
+
+    <h2>Commandes Docker utiles</h2>
+    <ul>
+      <li><code>docker --version</code></li>
+
+    </ul>
+
+    <h3>Rebuild de l'application</h3>
+    <ul>
+      <li><code>sudo docker-compose down</code></li>
+      <li><code>sudo docker-compose build --no-cache</code></li>
+      <li><code>sudo docker-compose up -d</code></li>
+    </ul>
+
+    <h3>Consulter les logs</h3>
+    <ul>
+      <li><code>sudo docker-compose logs -f</code></li>
+    </ul>
+
+    <h2>Gestion de la base de données avec Docker</h2>
+    <ul>
+      <li>Initialiser la base de données : <code>docker exec -it flask_app flask db init</code></li>
+      <li>Appliquer les migrations de base de données :
+        <pre><code>docker exec -it flask_app flask db migrate -m "initial migration"
+docker exec -it flask_app flask db upgrade</code></pre>
+      </li>
+    </ul>
+
+    <h3>Accéder au conteneur Docker</h3>
+    <ul>
+      <li>Pour entrer dans le conteneur de l'application : <code>sudo docker exec -it flask_app bash</code></li>
+      <li>Pour entrer dans le conteneur de la base de données MySQL : <code>sudo docker exec -it flask_mysql bash</code>
+      </li>
+    </ul>
+
+    <h2>Installation et configuration de MySQL</h2>
+    <ul>
+      <li>Installer le client MySQL : <code>apt update && apt install -y default-mysql-client</code></li>
+      <li>Se connecter à la base de données MySQL : <code>mysql -u user -p -h db</code></li>
+      <li>Configurer MySQL pour utiliser le mot de passe natif :
+        <pre><code>ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'root';
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
+FLUSH PRIVILEGES;</code></pre>
+      </li>
+      <li>Migrations de la base de données dans le conteneur :
+        <pre><code>docker exec -it flask_app bash
+flask db migrate -m "ton message"
+flask db upgrade</code></pre>
+      </li>
+    </ul>
+  </section>
+
+
+
+  <div class="colonne1">
+    <h2>Diagramme des Relations entre les Tables</h2>
+    <div class="mermaid">
+      erDiagram
+      ENTREPRISE {
+      int entreprise_id PK
+      string name
+      }
+      TICKET {
+      int ticket_id PK
+      int entreprise_id FK
+      string description
+      }
+      CONVERSATION {
+      int conversation_id PK
+      int ticket_id FK
+      datetime created_at
+      }
+      CONVERSATION_PARTICIPANTS {
+      int user_id PK, FK
+      int conversation_id PK, FK
+      }
+      MESSAGE {
+      int message_id PK
+      int user_id FK
+      int conversation_id FK
+      text content
+      datetime timestamp
+      }
+      SENTIMENT_ANALYSIS {
+      int analysis_id PK
+      int message_id FK
+      float sentiment_score
+      datetime analysis_timestamp
+      }
+      USER {
+      int user_id PK
+      string username
+      string email
+      }
+
+      ENTREPRISE ||--o{ TICKET : "possède"
+      TICKET ||--o{ CONVERSATION : "contient"
+      CONVERSATION ||--o{ MESSAGE : "a"
+      MESSAGE ||--o{ SENTIMENT_ANALYSIS : "analysé par"
+      USER ||--o{ MESSAGE : "écrit"
+      USER ||--o{ CONVERSATION_PARTICIPANTS : "participe à"
+      CONVERSATION ||--o{ CONVERSATION_PARTICIPANTS : "contient"
+    </div>
+  </div>
+
+  <!-- Mermaid Diagram script -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+</div>
+
+
+{% endblock %}

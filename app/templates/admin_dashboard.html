@@ -1,0 +1,38 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block content %}
+<div class="top-bar">
+  <h1>Dashboard</h1>
+  <input type="text" placeholder="Search..." class="search-box" />
+</div>
+
+<!-- Cards -->
+<div class="cards-row">
+  <div class="card circle green">
+    <p>Utilisateurs actifs</p>
+    <h2>{{ user_count }}</h2>
+  </div>
+  <div class="card bar yellow">
+    <p>Tickets ouverts</p>
+    <h2>{{ ticket_count }}</h2>
+  </div>
+  <div class="card bar red">
+    <p>Prédiction moyenne</p>
+    <h2>{{ avg_prediction }}</h2>
+  </div>
+</div>
+
+<!-- Graphs -->
+<div class="graph-row">
+  <div class="graph">
+    <h3>📈 Évolution des prédictions</h3>
+    <img src="{{ url_for('static', filename='images/messages_plot.png') }}" alt="Graph 1" />
+  </div>
+  <div class="graph">
+    <h3>☁️ Nuage de mots</h3>
+    <img src="{{ url_for('static', filename='images/wordcloud.png') }}" alt="Wordcloud" />
+  </div>
+</div>
+{% endblock %}

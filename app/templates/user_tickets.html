@@ -1,0 +1,60 @@
+{% extends "base_user.html" %}
+{% block title %}🎟️ Mes tickets{% endblock %}
+
+{% block content %}
+<div class="user-tickets-container">
+  <h1 class="page-title">🎫 Créer un nouveau ticket</h1>
+
+  <!-- 📝 Formulaire de création -->
+  <form method="POST" class="user-ticket-form">
+    <label for="subject">Sujet :</label>
+    <input type="text" id="subject" name="subject" placeholder="Sujet du ticket" required>
+
+    <label for="content">Message initial :</label>
+    <textarea id="content" name="content" rows="4" placeholder="Décris ton problème..." required></textarea>
+
+    <button type="submit" class="btn-user-submit">Envoyer</button>
+  </form>
+
+  <!-- 📋 Liste des tickets créés -->
+<h2 class="sub-title">📋 Mes tickets</h2>
+
+{% if tickets %}
+  <table class="user-tickets-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Sujet</th>
+        <th>Statut</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ticket in tickets %}
+      <tr>
+        <td data-label="ID">{{ ticket.id }}</td>
+        <td data-label="Sujet">{{ ticket.subject }}</td>
+        <td data-label="Statut">
+          {% if ticket.status == 'open' %}
+            🟢 Ouvert
+          {% elif ticket.status == 'pending' %}
+            🟡 En attente
+          {% else %}
+            🔴 Fermé
+          {% endif %}
+        </td>
+        <td data-label="Date">{{ ticket.created_at.strftime('%d/%m/%Y') }}</td>
+        <td data-label="Actions">
+          <a href="{{ url_for('user_chat.view_user_chat', ticket_id=ticket.id) }}" class="btn-user-view">💬 Voir</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>📭 Aucun ticket créé pour l'instant. Tu peux en créer un !</p>
+{% endif %}
+
+</div>
+{% endblock %}

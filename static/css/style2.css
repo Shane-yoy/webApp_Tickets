@@ -1,0 +1,428 @@
+@import "tailwindcss";
+
+
+/* Reset et base */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #333;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  padding-left: 10px;
+  /* Cette ligne ajoute un padding de 10px à gauche */
+}
+
+.mermaid {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: normal;
+  /* Permet les retours à la ligne */
+  word-wrap: break-word;
+  /* Coupe les longs mots si besoin */
+  display: block;
+  margin: 0 auto;
+  line-height: 1.4;
+}
+
+.colonne1 {
+  width: 100%;
+  max-width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+.responsive-text {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+
+/* Navbar fixée en haut */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #000000;
+  color: #ecf0f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  /* Evite les problèmes de débordement */
+}
+
+/* Ajuster le contenu pour ne pas être caché par la navbar */
+.content {
+  display: center;
+  padding-top: 80px;
+  padding-left: 10px;
+  padding-right: 10px;
+  background-color: #ecf0f1;
+  min-height: 100vh;
+}
+
+
+/* ✅ Liste de liens dans navbar */
+.navbar ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 20px;
+}
+
+.navbar ul li a {
+  color: #ecf0f1;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.navbar ul li a:hover {
+  text-decoration: underline;
+}
+
+
+
+/*======================================================*/
+/* CHAT */
+/*======================================================*/
+
+.container {
+  display: flex;
+  flex-direction: row;
+  gap: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+  margin-left: 10px;
+  /* Ajuste si nécessaire */
+}
+
+/* Chat-box : ajuster la marge si nécessaire */
+.chat-box {
+  margin-left: 10px;
+  /* Ajuste la marge à gauche ici aussi si nécessaire */
+}
+
+/* Section des messages */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15px 15px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.messages::-webkit-scrollbar {
+  display: none;
+  /* Pour Chrome, Safari et Opera */
+}
+
+/* Style des messages */
+.message {
+  max-width: 70%;
+  padding: 5px;
+  font-size: 0.95rem;
+  line-height: 1;
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  word-wrap: break-word;
+}
+
+
+
+/* ############################################## */
+/* Style par défaut pour l'index des messages */
+.message-index {
+  color: inherit;
+}
+
+
+
+
+/* ############################################## */
+/* Style des message_prediction */
+.message_prediction {
+  max-width: 35%;
+  padding: 5px;
+  font-size: 0.95rem;
+  line-height: 1;
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  word-wrap: break-word;
+  font-weight: bold;
+}
+
+/* Couleur pour la prédiction = 0 */
+.message_prediction.red {
+  color: red;
+}
+
+/* Couleur pour la prédiction = 1 */
+.message_prediction.green {
+  color: green;
+}
+
+/* ############################################## */
+
+
+
+
+.message.left {
+  align-self: flex-start;
+  background: rgba(131, 156, 226, 0.555);
+  /* Bleu doux */
+  color: white;
+}
+
+.message.right {
+  align-self: flex-end;
+  background: rgba(185, 149, 202, 0.486);
+  /* Vert doux */
+  color: white;
+}
+
+/* Formulaire en bas */
+.forms-container {
+  display: flex;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 10px;
+  border-top: 1px solid rgba(200, 200, 200, 0.5);
+  border-radius: 0 0 30px 30px;
+  /* Arrondi en bas */
+}
+
+.chat-form {
+  width: 40%;
+  /* Largeur zone de saisie */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  margin: 10px 0;
+}
+
+.chat-form h3 {
+  font-size: 1rem;
+  color: #555;
+  text-align: center;
+  margin: 0;
+}
+
+.chat-form input {
+  padding: 10px;
+  display: flex;
+  font-size: 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(200, 200, 200, 0.6);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin: 10px 10px;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.chat-form input[type="text"] {
+  width: 100%;
+  /* Le champ de texte prend toute la largeur du formulaire */
+  border-radius: 5px;
+  /* Coins arrondis */
+  border: 1px solid rgba(200, 200, 200, 0.5);
+  /* Bordure légère */
+}
+
+/* Supprimer le focus extérieur */
+.chat-form input:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+/* Conteneur des messages (inclut le message et le numéro) */
+.message-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /*position: relative;*/
+
+}
+
+/* Style des numéros de messages */
+.message-number {
+  font-size: 0.8rem;
+  color: #666;
+  margin-left: 10px;
+  white-space: nowrap;
+  align-self: flex-end;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*======================================================*/
+/* Style pour le header et le menu déroulant */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dropdown-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dropdown-form select {
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.dropdown-form button {
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.dropdown-form button:hover {
+  background-color: #0056b3;
+}
+
+
+/*======================================================*/
+/* Conteneur messages et numéros */
+.messages-container {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15px 15px 0 0;
+  /* Arrondi en haut */
+  gap: 10px;
+}
+
+/* Messages */
+.messages {
+  flex: 4;
+  /* Prend la majorité de l'espace */
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 10px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.7);
+
+  min-width: 100px;
+
+
+  /*
+  min-width: 50px;
+  max-width: 100px;
+  */
+}
+
+
+.messages::-webkit-scrollbar {
+  display: none;
+}
+
+/* Colonne des numéros */
+.message-numbers {
+  flex: 1;
+  /* Plus étroite que la section messages */
+  display: flex;
+  flex-direction: column;
+  align-items: right;
+  padding: 10px;
+
+  background: #fff;
+
+  overflow-y: auto;
+
+  max-width: 50%;
+
+}
+
+.message-numbers::-webkit-scrollbar {
+  display: none;
+}
+
+
+
+
+.chat-box,
+.chat-analyse {
+  overflow-y: auto;
+}
+
+.chat-analyse {
+
+  min-width: 100px;
+  width: 50%;
+  height: 80%;
+  background: rgba(255, 255, 255);
+  backdrop-filter: blur(10px);
+  border-radius: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(200, 200, 200, 0.5);
+  display: flex;
+  flex-direction: line;
+  margin-left: 20px;
+
+
+  overflow-y: auto;
+
+}
+
+
+
+
+.average-container {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.average-value {
+  font-weight: bold;
+}
+
+.average-value.positive {
+  color: #4CAF50;
+  /* Vert pour les valeurs positives ou >= 0.5 */
+}
+
+.average-value.negative {
+  color: #F44336;
+  /* Rouge pour les valeurs inférieures à 0.5 */
+}

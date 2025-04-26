@@ -1,0 +1,29 @@
+{% extends "base_user.html" %}
+{% block title %}💬 Discussion Ticket #{{ ticket.id }}{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+  <h1 class="chat-title">
+    💬 Discussion pour le ticket #{{ ticket.id }} - 
+    <span>{{ ticket.subject }}</span>
+  </h1>
+
+  <!-- ID caché pour JS -->
+  <input type="hidden" id="ticket-id" value="{{ ticket.id }}">
+
+  <!-- 📥 Boîte de messages -->
+  <div class="chat-box">
+    <!-- ⚡ Les messages seront injectés ici dynamiquement par JavaScript -->
+  </div>
+
+  <!-- ✍️ Formulaire de réponse -->
+  <form id="chat-form" class="chat-form">
+    <textarea id="chat-input" name="content" rows="3" placeholder="Écris ton message..." required></textarea>
+    <button type="submit" class="btn-send">Envoyer</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/user_chat.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,29 @@
+# Fichiers Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environnements
+.env
+.env.*
+.venv/
+env/
+venv/
+
+# IDE / Éditeurs
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Tests
+.coverage
+
+# Docker
+*.pid
+docker-compose.override.yml
+
+# Modèles ML
+/app/ai_models/TF_IDF_models/
