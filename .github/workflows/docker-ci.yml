@@ -36,6 +36,7 @@ jobs:
 
     - name: Installer les dépendances Python pour les tests
       run: |
+        pip install -r requirements.txt
         pip install pytest pytest-cov
 
     - name: Lancer les tests unitaires existants
