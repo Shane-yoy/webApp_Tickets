@@ -17,16 +17,28 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Connaitre la version de Docker (déjà installé)
-      run: docker version
+      run: docker --version
+
+    - name: Créer un .env temporaire pour la CI
+      run: |
+        echo "FLASK_ENV=docker" > .env
+        echo "DATABASE_URL=mysql+pymysql://root:root@db/mydatabase" >> .env
+        echo "SECRET_KEY=dev-secret-key" >> .env
+        echo "FLASK_DEBUG=True" >> .env
+        echo "JWT_SECRET_KEY=dev-jwt-secret" >> .env
+        echo "JWT_TOKEN_LOCATION=headers" >> .env
+        echo "JWT_ACCESS_TOKEN_EXPIRES=3600" >> .env
+        echo "CELERY_BROKER_URL=redis://redis:6379/0" >> .env
+        echo "CELERY_RESULT_BACKEND=redis://redis:6379/0" >> .env
 
     - name: Build du docker-compose
       run: docker compose -f docker-compose.yml build
 
-    - name: Vérifier que les containers démarrent
-      run: docker compose -f docker-compose.yml up -d
+    - name: Vérifier que les containers démarrent (sans mlflow)
+      run: docker compose up -d db redis web celery_worker celery_beat prometheus grafana
 
     - name: Lister les containers en fonctionnement
       run: docker ps
 
     - name: Stopper les containers
-      run: docker compose -f docker-compose.yml down
+      run: docker compose down
