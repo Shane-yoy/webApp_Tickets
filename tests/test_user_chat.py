@@ -1,46 +1,26 @@
-import pytest
-from flask import url_for
-from app import create_app, db
+# tests/test_user_chat.py
+
+from app import db
 from app.models import User, Ticket, Message
-
-@pytest.fixture
-def app_instance():
-    app = create_app()
-    app.config.update({
-        "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-        "SECRET_KEY": "test-secret-key",
-        "WTF_CSRF_ENABLED": False
-    })
-
-    with app.app_context():
-        db.create_all()
-        yield app
-        db.session.remove()
-        db.drop_all()
-
-@pytest.fixture
-def client(app_instance):
-    return app_instance.test_client()
 
 def test_homepage(client):
     response = client.get('/')
-    assert response.status_code in [200, 302]  # 302 if redirect to login
+    assert response.status_code in [200, 302]  # 302 = redirection si non connecté
 
-def test_send_message(client, app_instance):
-    with app_instance.app_context():
+def test_send_message(client, app):
+    with app.app_context():
         user = User(name="TestUser", email="test@example.com", password="hashed")
         db.session.add(user)
         db.session.commit()
-        user_id = user.id  # ⚡ Capture l'ID maintenant
+        user_id = user.id
 
         ticket = Ticket(subject="Test Ticket", created_by=user_id)
         db.session.add(ticket)
         db.session.commit()
-        ticket_id = ticket.id  # ⚡ Capture aussi l'ID du ticket
+        ticket_id = ticket.id
 
     with client.session_transaction() as sess:
-        sess['_user_id'] = str(user_id)  # ⚡ Utilise user_id capturé
+        sess['_user_id'] = str(user_id)
 
     res = client.post(f"/send_message/{ticket_id}", json={"content": "Hello world!"})
     assert res.status_code == 200
@@ -48,18 +28,17 @@ def test_send_message(client, app_instance):
     assert data["success"] is True
     assert "message" in data
 
-
-def test_get_messages(client, app_instance):
-    with app_instance.app_context():
+def test_get_messages(client, app):
+    with app.app_context():
         user = User(name="TestUser2", email="test2@example.com", password="hashed")
         db.session.add(user)
         db.session.commit()
-        user_id = user.id  # ⚡ Capture ID
+        user_id = user.id
 
         ticket = Ticket(subject="Another Ticket", created_by=user_id)
         db.session.add(ticket)
         db.session.commit()
-        ticket_id = ticket.id  # ⚡ Capture ID
+        ticket_id = ticket.id
 
         message = Message(ticket_id=ticket_id, user_id=user_id, content="First message!")
         db.session.add(message)
@@ -73,4 +52,3 @@ def test_get_messages(client, app_instance):
     messages = res.get_json()
     assert isinstance(messages, list)
     assert messages[0]['content'] == "First message!"
-

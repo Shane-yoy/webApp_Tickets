@@ -1,11 +1,12 @@
-import pytest
+# tests/test_admin_chat.py
+
 from app import db
 from app.models import User, Ticket, Message
 
-def test_admin_get_messages(client, app_instance, admin_user):
+def test_admin_get_messages(client, app, admin_user):
     """Test de récupération des messages par un admin"""
-    with app_instance.app_context():
-        admin = User.query.get(admin_user)  # ✅ Recharge le user
+    with app.app_context():
+        admin = User.query.get(admin_user)
         ticket = Ticket(subject="Admin Ticket", created_by=admin.id)
         db.session.add(ticket)
         db.session.commit()
@@ -16,7 +17,7 @@ def test_admin_get_messages(client, app_instance, admin_user):
         db.session.commit()
 
     with client.session_transaction() as sess:
-        sess['_user_id'] = str(admin_user)  # ✅ Ici on utilise directement l'ID
+        sess['_user_id'] = str(admin_user)
 
     response = client.get(f"/api/admin/messages/{ticket_id}")
     assert response.status_code == 200
@@ -24,21 +25,20 @@ def test_admin_get_messages(client, app_instance, admin_user):
     assert isinstance(messages, list)
     assert messages[0]["content"] == "Admin's first message"
 
-def test_admin_send_message(client, app_instance, admin_user):
+def test_admin_send_message(client, app, admin_user):
     """Test de l'envoi d'un message par l'admin"""
-    with app_instance.app_context():
-        admin = User.query.get(admin_user)  # ✅ Recharge le user
+    with app.app_context():
+        admin = User.query.get(admin_user)
         ticket = Ticket(subject="New Admin Ticket", created_by=admin.id)
         db.session.add(ticket)
         db.session.commit()
         ticket_id = ticket.id
 
     with client.session_transaction() as sess:
-        sess['_user_id'] = str(admin_user)  # ✅ Ici aussi l'ID directement
+        sess['_user_id'] = str(admin_user)
 
     response = client.post(f"/send_message_admin/{ticket_id}", json={"content": "Hello depuis l'admin"})
     assert response.status_code == 200
     data = response.get_json()
     assert data["success"] is True
     assert data["message"]["content"] == "Hello depuis l'admin"
-
