@@ -7,6 +7,26 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from app import create_app, db
 from app.models import User
+from unittest.mock import patch
+
+@pytest.fixture(autouse=True)
+def mock_model_loading(monkeypatch):
+    class DummyModel:
+        def predict(self, X):
+            return [1 for _ in range(X.shape[0])]
+
+    class DummyVectorizer:
+        def transform(self, texts):
+            return DummyMatrix(len(texts))
+
+    class DummyMatrix:
+        def __init__(self, n_samples):
+            self.shape = (n_samples, 10)
+
+    def dummy_load_model_and_vectorizer():
+        return DummyModel(), DummyVectorizer()
+
+    monkeypatch.setattr('app.ai_models.predict_model.load_model_and_vectorizer', dummy_load_model_and_vectorizer)
 
 @pytest.fixture
 def app_instance():
