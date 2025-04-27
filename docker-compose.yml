@@ -16,9 +16,66 @@ services:
       - "3306:3306"
     volumes:
       - ./mysql_data:/var/lib/mysql
+      - ./backup_real.sql:/docker-entrypoint-initdb.d/backup_real.sql  
+    networks:
+      - monitoring
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
     networks:
       - monitoring
 
+  web:
+    build: .
+    container_name: flask_app
+    restart: always
+    working_dir: /app
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - FLASK_DEBUG=1
+      - FLASK_APP=run.py
+    networks:
+      - monitoring
+
+  celery_worker:
+    build: .
+    container_name: celery_worker
+    command: celery -A app.celery_worker.celery worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+    networks:
+      - monitoring
+
+  celery_beat:
+    build: .
+    container_name: celery_beat
+    command: celery -A app.beat_scheduler.celery beat --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - db
+    networks:
+      - monitoring
 
   prometheus:
     image: prom/prometheus:v2.33.0
@@ -34,12 +91,12 @@ services:
     networks:
       - monitoring
 
-
   grafana:
     image: grafana/grafana:8.4.3
     container_name: grafana
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
     ports:
       - "3000:3000"
     depends_on:
@@ -47,31 +104,13 @@ services:
     networks:
       - monitoring
 
-
-  mysql_exporter:
-    image: prom/mysqld-exporter:latest
-    container_name: mysql_exporter
-    environment:
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=root
-      - MYSQL_HOST=db
-      - MYSQL_PORT=3306
-    ports:
-      - "9104:9104"
-    depends_on:
-      - db
-    networks:
-      - monitoring
-
-
   mlflow:
     image: ghcr.io/mlflow/mlflow:latest
     container_name: mlflow
     environment:
-      - BACKEND_STORE_URI=mysql+pymysql://root:root@db/mydatabase
-      - ARTIFACT_STORE_URI=s3://mlflow-artifacts/  
+      - BACKEND_STORE_URI=mysql+pymysql://root:root@db/mlflowdb
     ports:
-      - "5000:5000"
+      - "5001:5000"
     volumes:
       - ./mlruns:/mlflow/mlruns
     depends_on:
@@ -79,24 +118,6 @@ services:
     networks:
       - monitoring
 
-
-  web:
-    build: .
-    container_name: flask_app
-    restart: always
-    ports:
-      - "5000:5000"
-    depends_on:
-      - db
-    volumes:
-      - .:/app
-    env_file:
-      - .env
-    environment:
-      - FLASK_DEBUG=1
-      - FLASK_APP=run.py
-    networks:
-      - monitoring
 
 networks:
   monitoring:

@@ -17,6 +17,12 @@ from nltk.corpus import stopwords
 import matplotlib.pyplot as plt
 import joblib 
 import re
+import mlflow
+import mlflow.sklearn
+
+# On configure MLflow
+mlflow.set_tracking_uri("http://mlflow:5000")  # URL du serveur MLflow (ton conteneur Docker)
+mlflow.set_experiment("Analyse_Sentiment")     # Nom du projet
 
 def load_data(file_path):
     """Charge le fichier CSV contenant les tweets."""
@@ -84,23 +90,41 @@ def vectorize_data(X_train, X_test):
     return X_train_tfidf, X_test_tfidf, vectorizer
 
 def train_model(X_train_tfidf, y_train):
-    """Entraîne un modèle de régression logistique."""
-    model = LogisticRegression(max_iter=100, random_state=32)
-    model.fit(X_train_tfidf, y_train)
-    print("Modèle entraîné.")
+    """Entraîne un modèle de régression logistique et log dans MLflow."""
+    with mlflow.start_run():
+        model = LogisticRegression(max_iter=100, random_state=32)
+        model.fit(X_train_tfidf, y_train)
+        print("Modèle entraîné.")
+
+        # Log des paramètres
+        mlflow.log_param("model_type", "LogisticRegression")
+        mlflow.log_param("max_iter", 100)
+        mlflow.log_param("random_state", 32)
+
+        # Log du score sur l'entraînement
+        train_accuracy = model.score(X_train_tfidf, y_train)
+        mlflow.log_metric("train_accuracy", train_accuracy)
+
+        # Sauvegarde du modèle dans MLflow
+        mlflow.sklearn.log_model(model, artifact_path="model")
+
     return model
 
 
+
 def evaluate_model(model, X_test_tfidf, y_test):
-    """Évalue le modèle sur l'ensemble de test."""
+    """Évalue le modèle sur l'ensemble de test et log dans MLflow."""
     y_pred = model.predict(X_test_tfidf)
     acc = accuracy_score(y_test, y_pred)
-    acc = "f{acc:.4f}"
-    print(f"Accuracy : {acc:.2f}")
+    print(f"Accuracy : {acc:.4f}")
     print("Rapport de classification :\n")
     print(classification_report(y_test, y_pred))
+
+    # Log de la métrique test dans MLflow
+    mlflow.log_metric("test_accuracy", acc)
+
     return acc
-print(f"{acc:.2f}")
+
 
 def main(file_path):
     """Pipeline principal pour l'analyse de sentiment."""

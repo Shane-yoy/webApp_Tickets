@@ -84,3 +84,14 @@ flask db upgrade
 # Tests
 
 docker exec -it flask_app pytest
+
+
+# Monitoring 
+
+Ton API : http://localhost:5000
+
+Ton Dashboard Flask : http://localhost:5000/dashboard
+
+Ton MLflow UI : http://localhost:5001
+
+Ton Grafana : http://localhost:3000

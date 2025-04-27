@@ -4,6 +4,9 @@ __pycache__/
 *.pyo
 *.pyd
 
+# Dataset
+/app/ai_models/data_set/
+
 # Environnements
 .env
 .env.*

@@ -26,3 +26,6 @@ pytest
 pytest-flask
 
 flake8
+celery[redis]
+redis
+
