@@ -29,4 +29,4 @@ venv/
 docker-compose.override.yml
 
 # Modèles ML
-/app/ai_models/TF_IDF_models/
+
