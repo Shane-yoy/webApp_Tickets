@@ -1,4 +1,4 @@
-name: CI Docker Flask App
+name: CI/CD Flask App
 
 on:
   push:
@@ -9,42 +9,43 @@ on:
       - develop
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout le code
+    - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Connaitre la version de Docker
-      run: docker --version
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
 
-    - name: Créer un .env temporaire pour la CI
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Create dummy .env file
       run: |
         echo "DATABASE_URL=mysql+pymysql://root:root@db/mydatabase" > .env
-        echo "SECRET_KEY=fake_secret_for_ci" >> .env
-        echo "JWT_SECRET_KEY=fake_jwt_secret_for_ci" >> .env
+        echo "SECRET_KEY=dummytoken" >> .env
+        echo "JWT_SECRET_KEY=dummyjwt" >> .env
         echo "JWT_ACCESS_TOKEN_EXPIRES=3600" >> .env
-        echo "CELERY_BROKER_URL=redis://redis:6379/0" >> .env
-        echo "CELERY_RESULT_BACKEND=redis://redis:6379/0" >> .env
+        echo "FLASK_ENV=development" >> .env
 
-    - name: Build du docker-compose
-      run: docker compose -f docker-compose.yml build
-
-    - name: Vérifier que les containers démarrent
-      run: docker compose -f docker-compose.yml up -d
-
-    - name: Installer les dépendances Python pour les tests
-      run: |
-        pip install -r requirements.txt
-        pip install pytest pytest-cov
-
-    - name: Lancer les tests unitaires existants
+    - name: Run tests
       run: |
         pytest tests/ --cov=app --cov-report=term-missing
 
-    - name: Lister les containers en fonctionnement
-      run: docker ps
+  deploy-simulate:
+    needs: build-and-test
+    runs-on: ubuntu-latest
 
-    - name: Stopper les containers
-      run: docker compose -f docker-compose.yml down
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Simulate Deployment
+      run: |
+        echo "Déploiement simulé : L'application serait déployée ici si tout était vert ! 🚀"
