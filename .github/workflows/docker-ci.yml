@@ -16,8 +16,8 @@ jobs:
     - name: Checkout le code
       uses: actions/checkout@v4
 
-    - name: Installer Docker
-      uses: docker-practice/actions-setup-docker@v1
+    - name: Connaitre la version de Docker (déjà installé)
+      run: docker version
 
     - name: Build du docker-compose
       run: docker-compose -f docker-compose.yml build
