@@ -32,12 +32,12 @@ def mock_model_loading(monkeypatch):
 
 @pytest.fixture
 def app():
-    app = create_app()
-    app.config.update({
+    app = create_app(test_config={
         "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",  # Base temporaire
-        "SECRET_KEY": "test-secret-key",
-        "WTF_CSRF_ENABLED": False
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+        "SECRET_KEY": "test",
+        "WTF_CSRF_ENABLED": False,
+        "JWT_SECRET_KEY": "test-jwt-secret"
     })
 
     with app.app_context():
