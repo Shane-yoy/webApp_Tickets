@@ -1,0 +1,32 @@
+name: CI Docker Flask App
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout le code
+      uses: actions/checkout@v4
+
+    - name: Installer Docker
+      uses: docker-practice/actions-setup-docker@v1
+
+    - name: Build du docker-compose
+      run: docker-compose -f docker-compose.yml build
+
+    - name: Vérifier que les containers démarrent
+      run: docker-compose -f docker-compose.yml up -d
+
+    - name: Lister les containers en fonctionnement
+      run: docker ps
+
+    - name: Stopper les containers
+      run: docker-compose -f docker-compose.yml down
