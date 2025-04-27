@@ -20,13 +20,13 @@ jobs:
       run: docker version
 
     - name: Build du docker-compose
-      run: docker-compose -f docker-compose.yml build
+      run: docker compose -f docker-compose.yml build
 
     - name: Vérifier que les containers démarrent
-      run: docker-compose -f docker-compose.yml up -d
+      run: docker compose -f docker-compose.yml up -d
 
     - name: Lister les containers en fonctionnement
       run: docker ps
 
     - name: Stopper les containers
-      run: docker-compose -f docker-compose.yml down
+      run: docker compose -f docker-compose.yml down
