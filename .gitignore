@@ -30,3 +30,7 @@ docker-compose.override.yml
 
 # Modèles ML
 
+# Ignorer la base de Flask Monitoring
+flask_monitoringdashboard.db
+
+
