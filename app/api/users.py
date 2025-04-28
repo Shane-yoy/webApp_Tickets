@@ -40,7 +40,8 @@ class UserList(Resource):
         if claims['role'] != 'admin':
             api.abort(403, "Accès réservé aux administrateurs.")
         
-        hashed_password = generate_password_hash(data.get("password", "1234"))  # valeur par défaut si manquante
+        password = data['password']
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
         user = User(
             name=data['name'],
             email=data['email'],
